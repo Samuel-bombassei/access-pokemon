@@ -1,0 +1,52 @@
+Private Sub btn_login_Click()
+    Dim rs As DAO.Recordset
+    Dim sql As String
+    Dim usuarioDigitado As String
+    Dim senhaDigitada As String
+    Dim tipoConta As String
+
+    usuarioDigitado = Trim(Me.txt_usuario)
+    senhaDigitada = Trim(Me.txt_senha)
+    
+    If usuarioDigitado = "" Or senhaDigitada = "" Then
+        MsgBox "Preencha todos os campos!", vbExclamation, "Login"
+        Exit Sub
+    End If
+
+    ' Consulta: verifica se é o usuário OU o email, e se a senha bate
+    sql = "SELECT * FROM tb_contas " & _
+          "WHERE (Usuario = '" & usuarioDigitado & "' OR Email = '" & usuarioDigitado & "') " & _
+          "AND Senha = '" & senhaDigitada & "'"
+
+    Set rs = CurrentDb.OpenRecordset(sql)
+
+    If rs.EOF Then
+        MsgBox "Usuário ou senha inválidos.", vbCritical, "Erro de Login"
+    Else
+        tipoConta = rs.Fields("Tipo de Conta").Value
+
+        ' Oculta o Access (janela do fundo)
+        DoCmd.SelectObject acForm, Me.Name, True
+        DoCmd.Minimize
+
+        ' Abre o menu de acordo com o tipo
+        If tipoConta = "Usuário" Then
+            DoCmd.OpenForm "Menu_usuario"
+        ElseIf tipoConta = "Admim" Then
+            DoCmd.OpenForm "menu_adm"
+        Else
+            MsgBox "Tipo de conta desconhecido!", vbExclamation
+        End If
+
+        DoCmd.Close acForm, Me.Name  ' Fecha o formulário de login
+    End If
+
+    rs.Close
+    Set rs = Nothing
+End Sub
+Private Sub Form_Load()
+    DoCmd.ShowToolbar "Ribbon", acToolbarNo
+    DoCmd.SelectObject acTable, , True
+    DoCmd.RunCommand acCmdWindowHide
+End Sub
+
