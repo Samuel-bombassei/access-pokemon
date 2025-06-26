@@ -1,0 +1,55 @@
+Private Sub bnt_cad_contas_Click()
+  Dim sql As String
+
+    ' Validação simples dos campos
+    If IsNull(Me.txt_usuario) Or Me.txt_usuario = "" Then
+        MsgBox "Informe o usuário.", vbExclamation
+        Exit Sub
+    End If
+
+    If IsNull(Me.txt_email) Or Me.txt_email = "" Then
+        MsgBox "Informe o e-mail.", vbExclamation
+        Exit Sub
+    End If
+
+    If IsNull(Me.txt_senha) Or Me.txt_senha = "" Then
+        MsgBox "Informe a senha.", vbExclamation
+        Exit Sub
+    End If
+
+    If IsNull(Me.cmb_tipos_contas) Or Me.cmb_tipos_contas = "" Then
+        MsgBox "Selecione o tipo de conta.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Monta o comando SQL para inserir na tabela
+    sql = "INSERT INTO tb_contas (Usuario, Email, Senha, [Tipo de Conta]) " & _
+          "VALUES ('" & Me.txt_usuario & "', '" & Me.txt_email & "', '" & Me.txt_senha & "', '" & Me.cmb_tipos_contas & "')"
+
+    ' Executa o SQL
+    DoCmd.SetWarnings False
+    DoCmd.RunSQL sql
+    DoCmd.SetWarnings True
+
+    MsgBox "Conta cadastrada com sucesso!", vbInformation
+
+    ' Limpar campos após salvar
+    Me.txt_usuario = ""
+    Me.txt_email = ""
+    Me.txt_senha = ""
+    Me.cmb_tipos_contas = Null
+
+End Sub
+
+
+Private Sub btn_voltar_cadcontas_Click()
+DoCmd.Close
+DoCmd.OpenForm ("menu_adm"), acNormal
+End Sub
+
+
+Private Sub Form_Load()
+    Me.cmb_tipos_contas.RowSourceType = "Value List"
+    Me.cmb_tipos_contas.RowSource = "Usuário;Admim"
+End Sub
+
