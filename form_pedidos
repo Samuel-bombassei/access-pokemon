@@ -1,0 +1,115 @@
+Option Compare Database
+
+
+Private Sub btn_voltar_pedidos_Click()
+DoCmd.Close
+DoCmd.OpenForm ("Menu_usuario"), acNormal
+End Sub
+
+Private Sub Form_Load()
+conectar_banco
+End Sub
+Private Sub txt_carta_id_LostFocus()
+sql = "select*from tb_cartas where id = '" & txt_carta_id & "'"
+validar_leitura
+If rs.EOF = False Then
+    txt_carta_nome = rs.Fields(2).Value
+End If
+
+    
+End Sub
+
+
+Private Sub txt_carta_nome_LostFocus()
+    Dim di As String
+    Dim caminhoImagem As String
+    
+sql = "select*from tb_cartas where nomes = '" & txt_carta_nome & "'"
+validar_leitura
+If rs.EOF = False Then
+    txt_carta_id = rs.Fields(1).Value
+
+End If
+ End Sub
+ 
+ 
+Private Sub txt_cep_LostFocus()
+sql = "select*from tb_cep where cep = '" & txt_cep & "'"
+validar_leitura
+If rs.EOF = False Then
+    txt_endereco = rs.Fields(1).Value
+    txt_cidade = rs.Fields(2).Value
+    txt_bairro = rs.Fields(3).Value
+    txt_uf = rs.Fields(4).Value
+    txt_endereco.Enabled = False
+    txt_cidade.Enabled = False
+    txt_bairro.Enabled = False
+    txt_uf.Enabled = False
+End If
+End Sub
+Private Sub btn_pedidos_Click()
+  
+    Dim sql As String
+    
+    
+    sql = "INSERT INTO tb_pedidos (CPF, CARTA, QUANTIDADE, VALOR_FINAL, CEP, RUA, CIDADE, BAIRRO, NUMERO) " & _
+          "VALUES (" & _
+          "'" & Me.txt_cpf & "', " & _
+          "'" & Me.txt_carta_nome & "', " & _
+          Nz(Me.txt_quantidade, 0) & ", " & _
+          Nz(Me.Txt_pagar, 0) & ", " & _
+          "'" & Me.txt_cep & "', " & _
+          "'" & Me.txt_endereco & "', " & _
+          "'" & Me.txt_cidade & "', " & _
+          "'" & Me.txt_bairro & "', " & _
+          "'" & Me.txt_num & "')"
+    
+    ' Executar o comando SQL
+    DoCmd.SetWarnings False
+    DoCmd.RunSQL sql
+    DoCmd.SetWarnings True
+    
+    MsgBox "Pedido salvo com sucesso!", vbInformation, "Aviso"
+End Sub
+
+Private Sub txt_quantidade_LostFocus()
+    Dim sql As String
+    Dim rs As DAO.Recordset
+    Dim precoUnitario As Double
+    Dim quantidade As Double
+    Dim valorTotal As Double
+
+    ' Verifica se tem ID da carta e quantidade preenchidos
+    If IsNull(Me.txt_carta_id) Or Me.txt_carta_id = "" Then
+        MsgBox "Informe o ID da carta antes.", vbExclamation
+        Exit Sub
+    End If
+    
+    If IsNull(Me.txt_quantidade) Or Me.txt_quantidade = "" Then
+        Me.Txt_pagar = 0
+        Exit Sub
+    End If
+    
+    quantidade = Val(Me.txt_quantidade)
+    
+    ' Monta SQL para buscar o preço da carta
+    sql = "SELECT Preco FROM tb_cartas WHERE ID = '" & Me.txt_carta_id & "'"
+    
+    Set rs = CurrentDb.OpenRecordset(sql, dbOpenSnapshot)
+    
+    If rs.EOF Then
+        MsgBox "Carta não encontrada na tabela.", vbCritical
+        Me.Txt_pagar = 0
+        rs.Close
+        Set rs = Nothing
+        Exit Sub
+    End If
+    
+    precoUnitario = Nz(rs!Preco, 0)
+    rs.Close
+    Set rs = Nothing
+    
+    valorTotal = precoUnitario * quantidade
+    
+    Me.Txt_pagar = valorTotal
+End Sub
