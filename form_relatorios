@@ -1,0 +1,25 @@
+Option Compare Database
+
+Private Sub btn_gerar_relat_Click()
+If cmb_relat = "" Then
+ MsgBox ("selecione um relatorio"), vbExclamation + vbOKOnly, "ATENÇÃO"
+ Else
+  nome_relat = cmb_relat
+  
+DoCmd.OpenReport (nome_relat), acViewPreview
+  
+ End If
+ 
+End Sub
+
+Private Sub btn_voltar_relat_Click()
+DoCmd.Close
+DoCmd.OpenForm ("Menu_usuario"), acNormal
+End Sub
+
+Private Sub Form_Load()
+
+    Me.cmb_relat.RowSourceType = "Value List"
+    Me.cmb_relat.RowSource = "Compras por cpf;Cartas por tipo"
+End Sub
+
