@@ -1,0 +1,15 @@
+Option Compare Database
+Private Sub btn_cad_pedidos_Click()
+DoCmd.Close
+DoCmd.OpenForm ("pedidos"), acNormal
+End Sub
+
+Private Sub btn_encerrar_Click()
+DoCmd.Close
+DoCmd.OpenForm "login"
+End Sub
+
+Private Sub cmb_forms_Click()
+DoCmd.Close
+DoCmd.OpenForm ("Relatorios"), acNormal
+End Sub
