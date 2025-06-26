@@ -1,0 +1,16 @@
+Option Compare Database
+    Public caminho, nome_relat As String
+    Public nomeImagem As String
+    Public extensao As Variant
+    Public caminhoCompleto As String
+ Public db As Database 'variavel destinada ao banco de dados
+Public rs As Recordset 'destinada as tabelas
+Public sql As String 'destinada a quer's crud
+Public resp As String
+Function validar_leitura()
+Set rs = db.OpenRecordset(sql, dbOpenDynaset)
+End Function
+Function conectar_banco()
+Set db = CurrentDb
+'MsgBox ("Conexão ok"), vbInformation + vbOKOnly, "AVISO"
+End Function
