@@ -1,0 +1,67 @@
+Private Sub BTN_VOLTAR_CAD_CARTAS_Click()
+DoCmd.Close
+DoCmd.OpenForm ("menu_adm"), acNormal
+End Sub
+
+Private Sub Form_Load()
+    ' Preenche o combo de tipos em inglês
+    cmb_tipo.RowSourceType = "Value List"
+    cmb_tipo.RowSource = "Psychic;Water;Fire;Colorless;Lightning;Fighting;Grass;Trainer"
+  
+    ' Preenche o combo de raridades em inglês
+    cmb_raridade.RowSourceType = "Value List"
+    cmb_raridade.RowSource = "Common;Uncommon;Rare;Ultra Rare;Rare Holo"
+
+    ' Inicializa o preço como 0
+    txt_preco = 0
+End Sub
+
+Private Sub cmb_raridade_AfterUpdate()
+    ' Define o preço automaticamente com base na raridade
+    Select Case cmb_raridade
+        Case "Common"
+            txt_preco = " 1"
+        Case "Uncommon"
+            txt_preco = "5"
+        Case "Rare"
+            txt_preco = " 30"
+        Case "Ultra Rare"
+            txt_preco = " 120"
+        Case "Rare Holo"
+            txt_preco = "630"
+        Case Else
+            txt_preco = "0"
+    End Select
+End Sub
+
+Private Sub btn_salvar_Click()
+    Dim sql As String
+    Dim db As DAO.Database
+    
+    Set db = CurrentDb
+
+    sql = "INSERT INTO tb_cartas (Nomes, Tipo, Ataque1, Dano1, Ataque2, Dano2, Raridade, Preco) VALUES (" & _
+        "'" & txt_nome_carta & "', " & _
+        "'" & cmb_tipo & "', " & _
+        "'" & txt_ataque1 & "', " & _
+        "'" & txt_dano1 & "', " & _
+        "'" & txt_ataque2 & "', " & _
+        "'" & txt_dano2 & "', " & _
+        "'" & cmb_raridade & "', " & _
+        txt_preco & ")"
+    
+    db.Execute sql, dbFailOnError
+    MsgBox "Carta Registrada!", vbInformation
+
+    ' Limpa os campos
+    txt_nome_carta = ""
+    cmb_tipo = ""
+    txt_ataque = ""
+    txt_dano = ""
+    txt_ataque2 = ""
+    txt_dano2 = ""
+    cmb_raridade = ""
+    txt_preco = ""
+End Sub
+
+
